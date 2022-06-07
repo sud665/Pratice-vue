@@ -1,28 +1,48 @@
+// eslint-disable-next-line
 <template>
-  <nav class="menu">
-    <a v-for="(el, idx) in 메뉴들" :key="idx">{{ el }}</a>
-  </nav>
-  <div v-for="(el, idx) in products" :key="idx">
-    <img class="room-img" src="./assets/room0.jpg" />
-    <h4>
-      {{ products[idx] }}
-      <p>{{ prices[idx] }}만원</p>
-      <button @click="increase(idx)">허위매물신고</button>
-      <span> 신고수 : {{ 신고수[idx] }}</span>
-    </h4>
+  <div>
+    <div class="black-bg" v-if="isModal">
+      <div class="white-bg">
+        <img :src="oneroomData[clickNumber].image" style="width: 100%" />
+        <h4>{{ oneroomData[clickNumber].title }}</h4>
+        <p>가격 :{{ oneroomData[clickNumber].price }}</p>
+        <p>내용 : {{ oneroomData[clickNumber].content }}</p>
+        <button @click="isModal = false">닫기</button>
+      </div>
+    </div>
+    <DiscountBanner />
+    <nav class="menu">
+      <a v-for="(el, idx) in 메뉴들" :key="idx">{{ el }}</a>
+    </nav>
+
+    <div v-for="(el, idx) in oneroomData" :key="idx">
+      <img class="room-img" :src="el.image" @click="isModal = true" />
+      <h4
+        @click="
+          isModal = true;
+          clickNumber = idx;
+        "
+      >
+        {{ el.title }}
+      </h4>
+      <p>{{ el.price }}원</p>
+    </div>
   </div>
 </template>
 
 <script>
+import data from "./assets/data";
+import DiscountBanner from "./DiscountBanner.vue";
+
 export default {
   name: "App",
   data() {
     return {
+      clickNumber: 0,
+      isModal: false,
+      oneroomData: data,
       메뉴들: ["Home", "Shop", "About"],
-      products: ["역삼동원룸", "천호동원룸", "마포구원룸"],
-      prices: ["1000", "2000", "3000"],
       신고수: [0, 0, 0],
-      image: ["./assets/room0.jpg", "./assets/room1.jpg", "./assets/room2.jpg"],
     };
   },
   methods: {
@@ -30,7 +50,9 @@ export default {
       this.신고수[idx] += 1;
     },
   },
-  components: {},
+  components: {
+    Discount: DiscountBanner,
+  },
 };
 </script>
 
@@ -54,7 +76,7 @@ export default {
   padding: 10px;
 }
 .room-img {
-  width: 100%;
+  width: 50%;
   margin-top: 40px;
 }
 
@@ -73,7 +95,7 @@ div {
   padding: 20px;
 }
 
-.whith-bg {
+.white-bg {
   width: 100%;
   background: white;
   border-radius: 5px;
